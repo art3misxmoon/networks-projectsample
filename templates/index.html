@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>PokéBank - Blockchain Pokémon Trading</title>
+		<link
+			rel="stylesheet"
+			href="{{ url_for('static', filename='style.css') }}"
+		/>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>Welcome to PokéBank!</h1>
+				<p>A blockchain-based Pokémon trading system</p>
+				<div class="peer-info">
+					<p>Running as peer: <strong>{{ peer_id }}</strong></p>
+					<p>
+						Connected to tracker:
+						<strong>{{ tracker_address }}</strong>
+					</p>
+				</div>
+			</header>
+
+			<div class="dashboard">
+				<div class="card">
+					<h2>Add a Capture</h2>
+					<form id="capture-form">
+						<div class="form-group">
+							<label for="capture-trainer">Trainer Name:</label>
+							<input type="text" id="capture-trainer" required />
+						</div>
+						<div class="form-group">
+							<label for="capture-pokemon"
+								>Captured Pokémon:</label
+							>
+							<select id="capture-pokemon" required>
+								<option value="">Select a Pokémon</option>
+								{% for pokemon in pokemon_list %}
+								<option value="{{ pokemon }}">
+									{{ pokemon }}
+								</option>
+								{% endfor %}
+							</select>
+						</div>
+						<button type="submit" class="btn">
+							Register Capture
+						</button>
+					</form>
+					<div id="capture-status" class="status"></div>
+				</div>
+
+				<div class="card">
+					<h2>Make a Trade</h2>
+					<form id="trade-form">
+						<div class="form-group">
+							<label for="trade-trainer1">Your Name:</label>
+							<input type="text" id="trade-trainer1" required />
+						</div>
+
+						<div class="form-group">
+							<label for="trade-pokemon1"
+								>Your Pokémon to Trade:</label
+							>
+							<select id="trade-pokemon1" required>
+								<option value="">Select your Pokémon</option>
+							</select>
+							<div
+								class="form-group pokemon-selection-placeholder"
+								id="trade-pokemon1-placeholder"
+							>
+								Select a trainer to see available Pokémon
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="trade-trainer2">Their Name:</label>
+							<input type="text" id="trade-trainer2" required />
+						</div>
+
+						<div class="form-group">
+							<label for="trade-pokemon2"
+								>Their Pokémon to Receive:</label
+							>
+							<select id="trade-pokemon2" required>
+								<option value="">Select their Pokémon</option>
+							</select>
+							<div
+								class="form-group pokemon-selection-placeholder"
+								id="trade-pokemon2-placeholder"
+							>
+								Select a trainer to see available Pokémon
+							</div>
+						</div>
+						<button type="submit" class="btn">Execute Trade</button>
+					</form>
+					<div id="trade-status" class="status"></div>
+				</div>
+
+				<div class="card">
+					<h2>Transaction List</h2>
+					<div class="transactions"></div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="card">
+					<h2>Trainer Balances</h2>
+					<div id="balances-container">
+						<p>Loading balances...</p>
+					</div>
+				</div>
+
+				<div class="card">
+					<h2>Network Status</h2>
+					<div id="status-container">
+						<p>Loading status...</p>
+					</div>
+					<div id="peers-container">
+						<p>Loading peer information...</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<h2>Blockchain</h2>
+				<div id="blockchain-container">
+					<p>Loading blockchain...</p>
+				</div>
+			</div>
+
+			<div class="container mt-4">
+				<div class="row">
+					<div class="col-md-12">
+						<h2>Malicious Peer Activity</h2>
+						<div
+							id="malicious-logs"
+							class="card"
+							style="width: 1200px; margin: 0 auto"
+						>
+							<div class="card-body">
+								<div
+									id="malicious-logs-content"
+									style="max-height: 400px; overflow-y: auto"
+								></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// Function to create Pokémon card selection interface
+			function createPokemonCardSelection(selectElementId, pokemonList) {
+				const selectElement = document.getElementById(selectElementId);
+				if (!selectElement) return;
+
+				selectElement.classList.add("pokemon-select-hidden");
+
+				const containerWrapper = document.createElement("div");
+				containerWrapper.className = "pokemon-selection-wrapper";
+				selectElement.parentNode.insertBefore(
+					containerWrapper,
+					selectElement.nextSibling
+				);
+
+				const searchInput = document.createElement("input");
+				searchInput.type = "text";
+				searchInput.className = "search-pokemon";
+				searchInput.placeholder = "Search Pokémon...";
+				containerWrapper.appendChild(searchInput);
+
+				// Create container for cards
+				const container = document.createElement("div");
+				container.className = "pokemon-card-container";
+				containerWrapper.appendChild(container);
+
+				function padNumber(num) {
+					return num.toString().padStart(4, "0");
+				}
+
+				// Create cards for each Pokémon
+				function renderPokemonCards(filter = "") {
+					container.innerHTML = "";
+
+					pokemonList.forEach((pokemon, index) => {
+						if (
+							filter &&
+							!pokemon
+								.toLowerCase()
+								.includes(filter.toLowerCase())
+						) {
+							return;
+						}
+
+						const card = document.createElement("div");
+						card.className = "pokemon-card";
+						card.dataset.value = pokemon;
+
+						// Add image (using index + 1 to match file naming)
+						const imgElement = document.createElement("img");
+						imgElement.src = `/static/sprites/${padNumber(
+							index + 1
+						)}.png`;
+						imgElement.alt = pokemon;
+						card.appendChild(imgElement);
+
+						const nameElement = document.createElement("div");
+						nameElement.className = "pokemon-name";
+						nameElement.textContent = pokemon;
+						card.appendChild(nameElement);
+
+						// Add click event to select this Pokémon
+						card.addEventListener("click", function () {
+							container
+								.querySelectorAll(".pokemon-card")
+								.forEach((c) => {
+									c.classList.remove("selected");
+								});
+
+							card.classList.add("selected");
+
+							selectElement.value = pokemon;
+
+							const event = new Event("change", {
+								bubbles: true,
+							});
+							selectElement.dispatchEvent(event);
+						});
+
+						container.appendChild(card);
+					});
+				}
+
+				// Initial render
+				renderPokemonCards();
+
+				searchInput.addEventListener("input", function () {
+					renderPokemonCards(this.value);
+				});
+
+				// When the select changes, update the card selection
+				selectElement.addEventListener("change", function () {
+					const selectedValue = this.value;
+					container
+						.querySelectorAll(".pokemon-card")
+						.forEach((card) => {
+							if (card.dataset.value === selectedValue) {
+								card.classList.add("selected");
+							} else {
+								card.classList.remove("selected");
+							}
+						});
+				});
+			}
+
+			function updateTrainerPokemonCards(trainerFieldId, pokemonFieldId) {
+				const trainer = $(`#${trainerFieldId}`).val();
+
+				$(`#${pokemonFieldId}-placeholder`).hide();
+
+				if (!trainer) {
+					$(`#${pokemonFieldId}`).html(
+						'<option value="">Select a Pokémon</option>'
+					);
+					$(`#${pokemonFieldId}`).trigger("change");
+
+					// Clear any existing card container
+					const existingWrapper = $(`#${pokemonFieldId}`).next(
+						".pokemon-selection-wrapper"
+					);
+					if (existingWrapper.length) {
+						existingWrapper.remove();
+					}
+
+					$(`#${pokemonFieldId}-placeholder`).show();
+					return;
+				}
+				$.ajax({
+					url: "/api/balances",
+					type: "GET",
+					success: function (balances) {
+						const trainerPokemon = balances[trainer] || [];
+
+						// Update the select element
+						let options =
+							'<option value="">Select a Pokémon</option>';
+						trainerPokemon.forEach((p) => {
+							options += `<option value="${p}">${p}</option>`;
+						});
+
+						$(`#${pokemonFieldId}`).html(options);
+						$(`#${pokemonFieldId}`).trigger("change");
+
+						// Remove any existing card container
+						const existingWrapper = $(`#${pokemonFieldId}`).next(
+							".pokemon-selection-wrapper"
+						);
+						if (existingWrapper.length) {
+							existingWrapper.remove();
+						}
+
+						// Get the full Pokémon list to find correct indices for sprites
+						$.ajax({
+							url: "/api/pokemon",
+							type: "GET",
+							success: function (allPokemonList) {
+								const containerWrapper =
+									document.createElement("div");
+								containerWrapper.className =
+									"pokemon-selection-wrapper";
+								$(`#${pokemonFieldId}`).after(containerWrapper);
+
+								const container = document.createElement("div");
+								container.className = "pokemon-card-container";
+								containerWrapper.appendChild(container);
+
+								function padNumber(num) {
+									return num.toString().padStart(4, "0");
+								}
+
+								$(`#${pokemonFieldId}`).addClass(
+									"pokemon-select-hidden"
+								);
+
+								// Create cards for each of the trainer's Pokémon
+								trainerPokemon.forEach((pokemon) => {
+									const index = allPokemonList.findIndex(
+										(p) => p === pokemon
+									);
+									if (index === -1) return; // Skip if not found
+
+									const card = document.createElement("div");
+									card.className = "pokemon-card";
+									card.dataset.value = pokemon;
+
+									const imgElement =
+										document.createElement("img");
+									imgElement.src = `/static/sprites/${padNumber(
+										index + 1
+									)}.png`;
+									imgElement.alt = pokemon;
+									card.appendChild(imgElement);
+
+									const nameElement =
+										document.createElement("div");
+									nameElement.className = "pokemon-name";
+									nameElement.textContent = pokemon;
+									card.appendChild(nameElement);
+
+									card.addEventListener("click", function () {
+										container
+											.querySelectorAll(".pokemon-card")
+											.forEach((c) => {
+												c.classList.remove("selected");
+											});
+
+										card.classList.add("selected");
+
+										$(`#${pokemonFieldId}`).val(pokemon);
+
+										const event = new Event("change", {
+											bubbles: true,
+										});
+										document
+											.getElementById(pokemonFieldId)
+											.dispatchEvent(event);
+									});
+
+									container.appendChild(card);
+								});
+							},
+						});
+					},
+				});
+			}
+
+			// Function to update malicious logs
+			function updateMaliciousLogs() {
+				fetch("/api/malicious-logs")
+					.then((response) => response.json())
+					.then((logs) => {
+						const logsContainer = document.getElementById(
+							"malicious-logs-content"
+						);
+						logsContainer.innerHTML = "";
+
+						logs.forEach((log) => {
+							const logElement = document.createElement("div");
+							logElement.className =
+								"alert alert-" +
+								(log.type.includes("tampering")
+									? "danger"
+									: "success");
+
+							let content = `<strong>${new Date(
+								log.timestamp
+							).toLocaleString()}</strong><br>`;
+
+							if (typeof log.message === "object") {
+								content += `<strong>${log.message.message}</strong><br>`;
+								if (log.message.block_index !== undefined) {
+									content += `Block Index: ${log.message.block_index}<br>`;
+								}
+								if (log.message.original_hash) {
+									content += `Original Hash: ${log.message.original_hash}<br>`;
+								}
+								if (log.message.tampered_hash) {
+									content += `Tampered Hash: ${log.message.tampered_hash}<br>`;
+								}
+								if (log.message.corrected_hash) {
+									content += `Corrected Hash: ${log.message.corrected_hash}<br>`;
+								}
+								if (
+									log.message.tampered_position !== undefined
+								) {
+									content += `Tampered Position: ${log.message.tampered_position}<br>`;
+								}
+							} else {
+								content += log.message;
+							}
+
+							logElement.innerHTML = content;
+							logsContainer.appendChild(logElement);
+						});
+					});
+			}
+
+			// Update malicious logs every 5 seconds
+			setInterval(updateMaliciousLogs, 5000);
+			updateMaliciousLogs();
+		</script>
+
+		<!-- Main JavaScript File -->
+		<script src="{{ url_for('static', filename='main.js') }}"></script>
+	</body>
+</html>

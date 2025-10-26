@@ -1,0 +1,333 @@
+/* General Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    border-top: 5px solid #e74c3c;
+}
+
+h1, h2, h3 {
+    color: #2c3e50;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+/* Dashboard Styling */
+
+.peer-info {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: rgba(52, 152, 219, 0.1);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.dashboard {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.dashboard .card {
+    width: calc(32% - 10px);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.row .card {
+    width: calc(50% - 10px);
+}
+
+.status {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Text Styling */
+
+.success {
+    color: #27ae60;
+    background-color: rgba(39, 174, 96, 0.1);
+    border: 1px solid #27ae60;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.error {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid #e74c3c;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.connected {
+    color: #27ae60;
+}
+
+.disconnected {
+    color: #e74c3c;
+}
+
+/* Metric Styling */
+
+.status-info {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.status-info p {
+    margin-bottom: 5px;
+}
+
+.balances {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.trainer-balance {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    width: calc(33.333% - 10px);
+    min-width: 200px;
+}
+
+.trainer-balance h3 {
+    margin-bottom: 10px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+}
+
+.trainer-balance ul {
+    list-style-type: none;
+}
+
+.trainer-balance li {
+    padding: 5px 0;
+    border-bottom: 1px dotted #ddd;
+    display: flex;
+    align-items: center;
+}
+
+.trainer-balance li img {
+    margin-right: 8px;
+}
+
+.blockchain {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.block {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    padding: 15px;
+    border-left: 5px solid #3498db;
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.block-hash {
+    font-family: monospace;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.block-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.captures, .trades {
+    flex: 1;
+    min-width: 300px;
+}
+
+.captures h4, .trades h4 {
+    margin-bottom: 10px;
+    color: #e74c3c;
+}
+
+.captures ul, .trades ul {
+    list-style-type: none;
+}
+
+.captures li, .trades li {
+    padding: 5px 0;
+    border-bottom: 1px dotted #ddd;
+}
+
+.peers ul {
+    list-style-type: none;
+}
+
+.peers li {
+    padding: 5px 0;
+    font-family: monospace;
+}
+
+/* Pokémon Card/Container Styling */
+
+
+.pokemon-select-hidden {
+    display: none;
+}
+
+.pokemon-selection-wrapper {
+    margin-bottom: 15px;
+}
+
+.search-pokemon {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.pokemon-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.pokemon-card {
+    width: 90px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+.pokemon-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: #3498db;
+}
+
+.pokemon-card.selected {
+    border-color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.pokemon-card img {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 5px;
+}
+
+.pokemon-card .pokemon-name {
+    font-size: 12px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#trade-pokemon1, #trade-pokemon2 {
+    display: none;
+}
+
+.form-group.pokemon-selection-placeholder {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
