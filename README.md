@@ -1,6 +1,6 @@
-# CSEE4199 End of Term Project: Pokébank
+# Networks nd of Term Project: Pokébank
 
-**Arin Jaff, Marcus Lam, Phoebe Adams, Katharine Moon Vari**
+**Katharine Moon Vari, Arin Jaff, Marcus Lam, Phoebe Adams**
 
 Our application utilizes blockchain to register Pokémon trades and captures!
 Maintain a neat and secure list of your team while trading with your friends :)
