@@ -1,4 +1,4 @@
-# Networks nd of Term Project: Pokébank
+# Networks End of Term Project: Pokébank
 
 **Katharine Moon Vari, Arin Jaff, Marcus Lam, Phoebe Adams**
 
